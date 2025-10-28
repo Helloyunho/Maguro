@@ -27,17 +27,7 @@ struct ContentView: View {
                         .disableAutocorrection(true)
                 }
                 Button("Connect") {
-                    Task {
-                        do {
-                            guard let resp = try await connect() else {
-                                return
-                            }
-                            result = parse(resp.text ?? "Failed to get text")
-                        } catch {
-                            errorModel.error = error
-                            errorModel.showError = true
-                        }
-                    }
+                    onPressConnect()
                 }
                 ScrollView {
                     Text(result ?? "")
@@ -50,8 +40,31 @@ struct ContentView: View {
         }
     }
     
-    func connect() async throws -> Response? {
-        let url = Url(url)
+    func onPressConnect() {
+        Task {
+            do {
+                let url = Url(self.url)
+                var text: String
+                switch url.scheme {
+                case "http", "https":
+                    guard let resp = try await connect(url: url) else {
+                        return
+                    }
+                    text = resp.text ?? "Failed to get text"
+                case "file":
+                    text = try String(contentsOf: .init(filePath: url.path), encoding: .utf8)
+                default:
+                    text = "Unknown scheme."
+                }
+                result = parse(text)
+            } catch {
+                errorModel.error = error
+                errorModel.showError = true
+            }
+        }
+    }
+    
+    func connect(url: Url) async throws -> Response? {
         let req = Request(url: url)
         let conn = Connection(req)
         return try await conn.send()

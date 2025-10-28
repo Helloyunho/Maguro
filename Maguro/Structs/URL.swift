@@ -33,15 +33,20 @@ struct Url {
             url += "/"
         }
 
-        split = url.split(separator: "/", maxSplits: 1)
-        path = "/" + split[1]
         var portString: String?
-        if split[0].contains(":") {
-            split = split[0].split(separator: ":", maxSplits: 1)
-            host = String(split[0])
-            portString = String(split[1])
+        if url.starts(with: "/") {
+            path = String(url)
+            host = ""
         } else {
-            host = String(split[0])
+            split = url.split(separator: "/", maxSplits: 1)
+            path = "/" + split[1]
+            if split[0].contains(":") {
+                split = split[0].split(separator: ":", maxSplits: 1)
+                host = String(split[0])
+                portString = String(split[1])
+            } else {
+                host = String(split[0])
+            }
         }
 
         switch scheme {

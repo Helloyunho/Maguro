@@ -24,5 +24,22 @@
             </PersistentString>
          </PersistentStrings>
       </ContextState>
+      <ContextState
+         contextName = "closure #1 in ContentView.onPressConnect():ContentView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "Url.init(_:):URL.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "String(split[0])">
+            </PersistentString>
+            <PersistentString
+               value = "String(url.split(separator: &quot;/&quot;)[0])">
+            </PersistentString>
+            <PersistentString
+               value = "String(url)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
    </ContextStates>
 </VariablesViewState>

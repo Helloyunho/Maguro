@@ -48,4 +48,12 @@ struct Headers: ExpressibleByDictionaryLiteral {
             }
         }
     }
+    
+    static func +(lhs: Headers, rhs: Headers) -> Headers {
+        var result = lhs
+        for (key, value) in rhs.headers {
+            result.headers[key] = value
+        }
+        return result
+    }
 }

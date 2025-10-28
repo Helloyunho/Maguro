@@ -9,58 +9,61 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
+    @State var url = ""
+    @State var result: String?
+    @State var errorModel = ErrorModel()
+    
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        NavigationStack {
+            VStack {
+                HStack {
+                    Text("URL")
+                    TextField("Type URL", text: $url)
+                        .frame(width: 200)
+                    #if !os(macOS)
+                        .keyboardType(.URL)
+                        .textInputAutocapitalization(.never)
+                    #endif
+                        .disableAutocorrection(true)
+                }
+                Button("Connect") {
+                    Task {
+                        do {
+                            guard let resp = try await connect() else {
+                                return
+                            }
+                            result = parse(resp.text ?? "Failed to get text")
+                        } catch {
+                            errorModel.error = error
+                            errorModel.showError = true
+                        }
                     }
                 }
-                .onDelete(perform: deleteItems)
-            }
-#if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-#endif
-            .toolbar {
-#if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-#endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+                ScrollView {
+                    Text(result ?? "")
                 }
             }
-        } detail: {
-            Text("Select an item")
+        }
+        .alert("Error", isPresented: $errorModel.showError, presenting: errorModel.error) { _ in
+        } message: { error in
+            Text(error.localizedDescription)
         }
     }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
+    
+    func connect() async throws -> Response? {
+        let url = Url(url)
+        let req = Request(url: url)
+        let conn = Connection(req)
+        return try await conn.send()
     }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
-        }
+    
+    func parse(_ body: String) -> String {
+        let parser = HTMLParser(body)
+        parser.parse()
+        return parser.parsedText
     }
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
 }

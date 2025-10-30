@@ -5,14 +5,14 @@
 //  Created by Helloyunho on 2025/10/26.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct ContentView: View {
     @State var url = ""
     @State var result: String?
     @State var errorModel = ErrorModel()
-    
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -20,10 +20,10 @@ struct ContentView: View {
                     Text("URL")
                     TextField("Type URL", text: $url)
                         .frame(width: 200)
-                    #if !os(macOS)
-                        .keyboardType(.URL)
-                        .textInputAutocapitalization(.never)
-                    #endif
+                        #if !os(macOS)
+                            .keyboardType(.URL)
+                            .textInputAutocapitalization(.never)
+                        #endif
                         .disableAutocorrection(true)
                 }
                 Button("Connect") {
@@ -39,11 +39,19 @@ struct ContentView: View {
             Text(error.localizedDescription)
         }
     }
-    
+
     func onPressConnect() {
         Task {
             do {
-                let url = Url(self.url)
+                let url =
+                    Url(self.url) ?? Url("https://\(self.url)")
+                    ?? Url(
+                        scheme: "https",
+                        host: "google.com",
+                        path: "/search",
+                        port: 443,
+                        queryParams: ["q": self.url]
+                    )
                 var text: String
                 switch url.scheme {
                 case "http", "https":
@@ -66,13 +74,13 @@ struct ContentView: View {
             }
         }
     }
-    
+
     func connect(url: Url) async throws -> Response? {
         let req = Request(url: url)
         let conn = Connection(req)
         return try await conn.send()
     }
-    
+
     func parse(_ body: String) -> String {
         let parser = HTMLParser(body)
         parser.parse()

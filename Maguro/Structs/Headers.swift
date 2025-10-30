@@ -7,6 +7,10 @@
 
 struct Headers: ExpressibleByDictionaryLiteral {
     var headers: [String: String] = [:]
+    
+    var text: String {
+        headers.map { "\($0): \($1)" }.joined(separator: "\r\n") + "\r\n"
+    }
 
     init(dictionaryLiteral elements: (String, String)...) {
         for (key, value) in elements {

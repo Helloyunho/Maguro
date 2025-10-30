@@ -41,5 +41,13 @@
             </PersistentString>
          </PersistentStrings>
       </ContextState>
+      <ContextState
+         contextName = "DataURL.init(_:):DataURL.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "String(split[0])">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
    </ContextStates>
 </VariablesViewState>

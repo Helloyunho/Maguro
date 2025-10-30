@@ -5,6 +5,24 @@
 //  Created by Helloyunho on 2025/10/28.
 //
 
+let ENTITIES: [String:String] = [
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": "\"",
+    "&nbsp;": " ",
+    "&ndash;": "–",
+    "&mdash;": "—",
+    "&copy;": "©",
+    "&reg;": "®",
+    "&trade;": "™",
+    "&asymp;": "≈",
+    "&ne;": "≠",
+    "&pound;": "£",
+    "&euro;": "€",
+    "&deg;": "°",
+]
+
 class HTMLParser {
     var html: String
     var parsedText: String = "" // later it will be changed to node ig
@@ -26,6 +44,10 @@ class HTMLParser {
                     parsedText += String(c)
                 }
             }
+        }
+        
+        for (entity, replace) in ENTITIES {
+            parsedText.replace(entity, with: replace)
         }
     }
 }

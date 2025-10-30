@@ -12,6 +12,7 @@ struct Url {
     let host: String
     let path: String
     let port: UInt16?
+    let queryParams: QueryParams
 
     var url: URL {
         var urlcomponent = URLComponents()
@@ -23,9 +24,35 @@ struct Url {
         urlcomponent.path = path
         return urlcomponent.url!
     }
+    
+    static func getMatchingPort(scheme: String) -> UInt16? {
+        switch scheme {
+        case "http":
+            80
+        case "https":
+            443
+        default:
+            nil
+        }
+    }
+    
+    init(scheme: String, host: String, path: String, port: UInt16?, queryParams: QueryParams?) {
+        self.scheme = scheme
+        self.host = host
+        self.path = path
+        if let port {
+            self.port = port
+        } else {
+            self.port = Url.getMatchingPort(scheme: scheme)
+        }
+        self.queryParams = queryParams ?? [:]
+    }
 
-    init(_ string: String) {
+    init?(_ string: String) {
         var split = string.split(separator: ":", maxSplits: 1)
+        if split.count != 2 {
+            return nil
+        }
         scheme = String(split[0])
         var url = split[1].starts(with: "//") ? split[1][split[1].index(split[1].startIndex, offsetBy: 2)...] : split[1]
 
@@ -38,28 +65,25 @@ struct Url {
             path = String(url)
             host = ""
         } else {
-            split = url.split(separator: "/", maxSplits: 1)
+            split = url.split(separator: "/", maxSplits: 1, omittingEmptySubsequences: false)
             path = "/" + split[1]
-            if split[0].contains(":") {
-                split = split[0].split(separator: ":", maxSplits: 1)
-                host = String(split[0])
+            split = split[0].split(separator: ":", maxSplits: 1, omittingEmptySubsequences: false)
+            host = String(split[0])
+            if split.count == 2 && (!split[1].isEmpty || split[1].allSatisfy(\.isNumber)) {
                 portString = String(split[1])
-            } else {
-                host = String(split[0])
             }
         }
 
-        switch scheme {
-        case "http":
-            port = 80
-        case "https":
-            port = 443
-        default:
-            if let portString {
-                port = UInt16(portString)
-            } else {
-                port = nil
-            }
+        if let portString {
+            port = UInt16(portString)
+        } else {
+            port = Url.getMatchingPort(scheme: scheme)
+        }
+        split = string.split(separator: "?", maxSplits: 1)
+        if split.count == 2 && !split[1].isEmpty {
+            queryParams = QueryParams(String(split[1]))
+        } else {
+            queryParams = [:]
         }
     }
 }

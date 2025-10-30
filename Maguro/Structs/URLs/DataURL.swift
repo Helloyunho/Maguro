@@ -38,7 +38,10 @@ struct DataURL {
             return nil
         }
         
-        split = split[1].split(separator: ",", maxSplits: 1)
+        split = split[1].split(separator: ",", maxSplits: 1, omittingEmptySubsequences: false)
+        if !split[0].isEmpty {
+            mimeType = String(split[0])
+        }
         dataString = String(split[1])
         
         split = split[0].split(separator: ";")

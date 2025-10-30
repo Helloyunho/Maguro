@@ -43,14 +43,20 @@ struct ContentView: View {
     func onPressConnect() {
         Task {
             do {
+                var urlString = self.url
+                var viewSource = false
+                if urlString.starts(with: "view-source:") {
+                    viewSource = true
+                    urlString = String(urlString[urlString.index(urlString.startIndex, offsetBy: 12)...])
+                }
                 let url =
-                    Url(self.url) ?? Url("https://\(self.url)")
+                    Url(urlString) ?? Url("https://\(urlString)")
                     ?? Url(
                         scheme: "https",
                         host: "google.com",
                         path: "/search",
                         port: 443,
-                        queryParams: ["q": self.url]
+                        queryParams: ["q": urlString]
                     )
                 var text: String
                 switch url.scheme {
@@ -67,7 +73,7 @@ struct ContentView: View {
                 default:
                     text = "Unknown scheme."
                 }
-                result = parse(text)
+                result = viewSource ? text : parse(text)
             } catch {
                 errorModel.error = error
                 errorModel.showError = true

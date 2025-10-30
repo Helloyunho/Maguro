@@ -14,8 +14,8 @@
             filePath = "Maguro/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "73"
-            endingLineNumber = "73"
+            startingLineNumber = "79"
+            endingLineNumber = "79"
             landmarkName = "onPressConnect()"
             landmarkType = "7">
          </BreakpointContent>

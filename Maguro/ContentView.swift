@@ -53,6 +53,9 @@ struct ContentView: View {
                     text = resp.text ?? "Failed to get text"
                 case "file":
                     text = try String(contentsOf: .init(filePath: url.path), encoding: .utf8)
+                case "data":
+                    let dataURL = DataURL(self.url)
+                    text = dataURL?.text ?? "Failed to get text"
                 default:
                     text = "Unknown scheme."
                 }

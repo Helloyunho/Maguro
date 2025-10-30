@@ -23,7 +23,7 @@ struct Request {
                     "Mozilla/5.0 (compatible; Maguro/\(appVersion ?? "unknown"); +https://github.com/helloyunho/Maguro)",
                 "Connection": "close"
             ]) + self.headers
-        let request = "GET \(url.path) \(version.rawValue)"
+        let request = "GET \(url.path) \(version.rawValue)\r\n"
         return (request + headers.text + "\r\n").data(using: .utf8)! + (data ?? Data())
     }
 }

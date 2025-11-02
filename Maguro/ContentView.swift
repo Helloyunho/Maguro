@@ -12,6 +12,7 @@ struct ContentView: View {
     @State var url = ""
     @State var result: String?
     @State var errorModel = ErrorModel()
+    let session = Session()
 
     var body: some View {
         NavigationStack {
@@ -83,8 +84,7 @@ struct ContentView: View {
 
     func connect(url: Url) async throws -> Response? {
         let req = Request(url: url)
-        let conn = Connection(req)
-        return try await conn.send()
+        return try await session.send(req)
     }
 
     func parse(_ body: String) -> String {

@@ -21,7 +21,7 @@ struct Request {
                 "Host": url.host,
                 "User-Agent":
                     "Mozilla/5.0 (compatible; Maguro/\(appVersion ?? "unknown"); +https://github.com/helloyunho/Maguro)",
-                "Connection": "close"
+                "Connection": "keep-alive"
             ]) + self.headers
         let request = "GET \(url.path) \(version.rawValue)\r\n"
         return (request + headers.text + "\r\n").data(using: .utf8)! + (data ?? Data())
